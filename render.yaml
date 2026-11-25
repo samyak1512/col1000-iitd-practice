@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: col1000-iitd-practice
+    runtime: python
+    plan: free
+    buildCommand: ""
+    startCommand: python3 server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: GOOGLE_CLIENT_ID
+        value: 998989575243-qk50h87i19kiuu1cnl0rrv6sjt8ruka3.apps.googleusercontent.com

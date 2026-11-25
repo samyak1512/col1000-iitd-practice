@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>COL1000 Practice — IIT Delhi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- CodeMirror 5 via CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css" />
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <button id="drawerToggleBtn" class="btn btn-ghost nav-drawer-btn" title="Problem List">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <span>Problems</span>
+        <span id="solvedProgressPill" class="progress-pill">0/22</span>
+      </button>
+
+      <div class="brand">
+        <div class="brand-badge">IITD</div>
+        <div class="brand-text">
+          <span class="brand-title">COL1000</span>
+          <span class="brand-sub">Practice Arena</span>
+        </div>
+      </div>
+
+      <div class="nav-stepper">
+        <button id="prevProbBtn" class="btn btn-icon" title="Previous Problem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button id="nextProbBtn" class="btn btn-icon" title="Next Problem">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button id="viewPdfBtn" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>View PDF</span>
+      </button>
+
+      <button id="leaderboardBtn" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h2a2 2 0 0 1 2 2v1a3 3 0 0 1-3 3h-1"/><path d="M7 5H5a2 2 0 0 0-2 2v1a3 3 0 0 0 3 3h1"/></svg>
+        <span>Leaderboard</span>
+      </button>
+
+      <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Dark/Light Mode">
+        <svg id="themeIconSun" class="hidden" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg id="themeIconMoon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+
+      <button id="authBtn" class="btn btn-primary-outline">
+        <span id="authBtnLabel">Sign In</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Problem Drawer Overlay -->
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+  <aside id="problemDrawer" class="problem-drawer" aria-hidden="true">
+    <div class="drawer-header">
+      <div>
+        <h2>COL1000 Problem Set</h2>
+        <p class="drawer-sub">22 curated Python problems</p>
+      </div>
+      <button id="closeDrawerBtn" class="btn btn-icon" title="Close">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="drawer-filters">
+      <input id="drawerSearch" type="text" placeholder="Search problems..." class="input-field" />
+      <div class="filter-pills">
+        <button class="filter-pill active" data-tier="All">All</button>
+        <button class="filter-pill" data-tier="Easy">Easy</button>
+        <button class="filter-pill" data-tier="Medium">Medium</button>
+        <button class="filter-pill" data-tier="Hard">Hard</button>
+      </div>
+    </div>
+    <div id="drawerList" class="drawer-list"></div>
+  </aside>
+
+  <!-- Main Workspace Split -->
+  <main class="workspace">
+    <!-- Left Pane -->
+    <section class="pane left-pane">
+      <div class="tab-bar" role="tablist">
+        <button class="tab-btn active" data-left-tab="description">Description</button>
+        <button class="tab-btn" data-left-tab="hints">Hints</button>
+        <button class="tab-btn" data-left-tab="solution">Solution</button>
+        <button class="tab-btn" data-left-tab="submissions">Submissions</button>
+      </div>
+
+      <div class="pane-scroll">
+        <!-- Tab 1: Description -->
+        <div id="tab-description" class="tab-panel active">
+          <div class="prob-header">
+            <h1 id="probTitle" class="prob-title">Loading...</h1>
+            <div class="prob-badges">
+              <span id="probDifficulty" class="badge badge-easy">Easy</span>
+              <span id="probSolvedBadge" class="badge badge-solved hidden">Solved</span>
+            </div>
+          </div>
+
+          <div id="probStatement" class="prose-block"></div>
+
+          <div id="workedExampleSection" class="section-card hidden">
+            <h3>Worked Example</h3>
+            <div id="probWorkedExample" class="prose-block"></div>
+          </div>
+
+          <div class="section-grid">
+            <div id="inputFormatSection" class="section-card">
+              <h3>Input Format</h3>
+              <div id="probInputFormat" class="prose-block"></div>
+            </div>
+            <div id="outputFormatSection" class="section-card">
+              <h3>Output Format</h3>
+              <div id="probOutputFormat" class="prose-block"></div>
+            </div>
+          </div>
+
+          <div id="constraintsSection" class="section-card">
+            <h3>Constraints</h3>
+            <pre id="probConstraints" class="mono-box"></pre>
+          </div>
+
+          <div class="section-card">
+            <h3>Sample Test Cases</h3>
+            <div id="probSamplesList" class="samples-list"></div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Hints -->
+        <div id="tab-hints" class="tab-panel">
+          <div class="hints-container">
+            <p class="muted-text">Use hints progressively when you are stuck. Try solving on your own first!</p>
+            <div class="hint-card">
+              <div class="hint-header">
+                <span>Hint 1</span>
+                <button id="revealHint1Btn" class="btn btn-sm btn-secondary">Reveal Hint 1</button>
+              </div>
+              <div id="hint1Body" class="hint-body hidden"></div>
+            </div>
+            <div class="hint-card">
+              <div class="hint-header">
+                <span>Hint 2</span>
+                <button id="revealHint2Btn" class="btn btn-sm btn-secondary" disabled>Reveal Hint 2</button>
+              </div>
+              <div id="hint2Body" class="hint-body hidden"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Solution -->
+        <div id="tab-solution" class="tab-panel">
+          <div class="solution-header">
+            <h3>Step-by-Step Approach</h3>
+            <button id="copySolutionBtn" class="btn btn-sm btn-secondary">Copy to Editor</button>
+          </div>
+          <ol id="solutionStepsList" class="solution-steps"></ol>
+          <h3 class="sol-code-heading">Reference Python Solution</h3>
+          <pre id="solutionCodeBlock" class="code-preview"></pre>
+        </div>
+
+        <!-- Tab 4: Submissions -->
+        <div id="tab-submissions" class="tab-panel">
+          <div class="submissions-header">
+            <h3>Your Submissions</h3>
+            <button id="refreshSubmissionsBtn" class="btn btn-sm btn-ghost">Refresh</button>
+          </div>
+          <div id="submissionsList" class="submissions-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <div id="paneResizer" class="pane-resizer" title="Drag to resize"></div>
+
+    <!-- Right Pane -->
+    <section class="pane right-pane">
+      <div class="editor-toolbar">
+        <div class="editor-meta">
+          <span class="lang-pill">Python 3.12</span>
+          <span class="shortcut-hint">Ctrl/Cmd + Enter to Run</span>
+        </div>
+        <div class="editor-actions">
+          <div class="font-controls">
+            <button id="fontDecBtn" class="btn btn-icon btn-xs" title="Decrease Font Size">A-</button>
+            <span id="fontSizeLabel" class="font-size-label">14px</span>
+            <button id="fontIncBtn" class="btn btn-icon btn-xs" title="Increase Font Size">A+</button>
+          </div>
+          <button id="resetCodeBtn" class="btn btn-sm btn-ghost" title="Reset to Starter Code">Reset Code</button>
+        </div>
+      </div>
+
+      <div id="editorContainer" class="editor-container">
+        <!-- CodeMirror mounts here; fallback textarea is used if CodeMirror CDN is unavailable -->
+        <div id="fallbackEditorWrap" class="fallback-editor-wrap hidden">
+          <pre id="fallbackLineNumbers" class="fallback-lines" aria-hidden="true">1</pre>
+          <textarea id="fallbackTextarea" class="fallback-textarea" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+        </div>
+      </div>
+
+      <!-- Bottom Console Panel -->
+      <div class="console-panel">
+        <div class="console-header">
+          <div class="tab-bar compact" role="tablist">
+            <button class="tab-btn active" data-console-tab="cases">Test Cases</button>
+            <button class="tab-btn" data-console-tab="results">Test Results</button>
+            <button class="tab-btn" data-console-tab="custom">Custom Input</button>
+          </div>
+          <div class="run-submit-bar">
+            <button id="runBtn" class="btn btn-secondary">
+              <span class="spinner hidden" id="runSpinner"></span>
+              <span>Run</span>
+            </button>
+            <button id="submitBtn" class="btn btn-primary">
+              <span class="spinner hidden" id="submitSpinner"></span>
+              <span>Submit</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="console-body">
+          <!-- Console Tab 1: Test Cases -->
+          <div id="console-cases" class="console-tab-panel active">
+            <div id="sampleCasePills" class="case-pills"></div>
+            <div id="selectedSampleView" class="sample-view"></div>
+          </div>
+
+          <!-- Console Tab 2: Test Results -->
+          <div id="console-results" class="console-tab-panel">
+            <div id="resultsEmpty" class="muted-text">Run or Submit your code to see test results here.</div>
+            <div id="resultsContent" class="hidden"></div>
+          </div>
+
+          <!-- Console Tab 3: Custom Input -->
+          <div id="console-custom" class="console-tab-panel">
+            <label for="customInputArea" class="custom-label">Standard Input (stdin):</label>
+            <textarea id="customInputArea" class="custom-textarea" rows="4" placeholder="Enter custom stdin here..."></textarea>
+            <div id="customOutputWrap" class="custom-output-wrap hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- PDF Modal -->
+  <div id="pdfModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-xl">
+      <div class="modal-header">
+        <div class="pdf-header-left">
+          <h3>COL1000 Practice Problems PDF</h3>
+          <span id="pdfPageIndicator" class="pdf-page-indicator hidden"></span>
+        </div>
+        <div class="modal-header-actions">
+          <div id="pdfZoomControls" class="pdf-zoom-controls hidden">
+            <button id="pdfZoomOutBtn" class="btn btn-sm btn-secondary" title="Zoom Out">-</button>
+            <span id="pdfZoomLabel" class="pdf-zoom-label">100%</span>
+            <button id="pdfZoomInBtn" class="btn btn-sm btn-secondary" title="Zoom In">+</button>
+          </div>
+          <a href="/COL1000_Practice_Problems_v2.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-secondary">Open in New Tab</a>
+          <a href="/COL1000_Practice_Problems_v2.pdf" download="COL1000_Practice_Problems_v2.pdf" class="btn btn-sm btn-primary">Download PDF</a>
+          <button class="btn btn-icon modal-close" data-close-modal="pdfModal">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body pdf-modal-body">
+        <div id="pdfStatusMsg" class="pdf-status-msg hidden"></div>
+        <div id="pdfPagesContainer" class="pdf-pages-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaderboard Modal -->
+  <div id="leaderboardModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3>IIT Delhi COL1000 Leaderboard</h3>
+          <p class="modal-sub">Scoring: Easy = 10 pts, Medium = 20 pts, Hard = 30 pts</p>
+        </div>
+        <button class="btn btn-icon modal-close" data-close-modal="leaderboardModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="leaderboardTableWrap" class="table-wrap"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal -->
+  <div id="authModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3 id="authModalTitle">Sign In to COL1000</h3>
+        <button class="btn btn-icon modal-close" data-close-modal="authModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="authSignedOutView">
+          <p class="muted-text" style="margin-bottom:16px;">Sign in with your Google account to save submissions and appear on the leaderboard.</p>
+          <div id="googleGsiWrap" class="gsi-wrap">
+            <div id="googleGsiButton" style="display:flex;justify-content:center;"></div>
+          </div>
+          <div id="authErrorMsg" class="error-text hidden" style="margin-top:12px;"></div>
+        </div>
+        <div id="authSignedInView" class="hidden">
+          <div class="profile-card">
+            <div id="profileAvatar" class="avatar-circle">ST</div>
+            <div>
+              <div id="profileName" class="profile-name"></div>
+              <div id="profileEmail" class="profile-email"></div>
+            </div>
+          </div>
+          <button id="signOutBtn" class="btn btn-danger-outline btn-full">Sign Out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Google Identity Services & CodeMirror 5 Scripts -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
